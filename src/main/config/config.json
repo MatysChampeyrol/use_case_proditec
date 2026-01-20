@@ -1,0 +1,10 @@
+{
+    "access-token": "${API_KEY}",
+    
+    "url_model_llm": "${URL_MODEL_LLM}",
+    "model_llm": "${MODEL_LLM}",
+    "max_token_llm": 1028,
+    "temperature_llm": 0,
+
+    "url_embedding_model": "${URL_EMBEDDING_MODEL}"
+}
