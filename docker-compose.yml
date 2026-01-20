@@ -1,0 +1,18 @@
+services:
+  chroma_server:
+    image: chromadb/chroma:latest
+    container_name: chroma
+    volumes:
+      - chroma_data:/data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=False
+      - CHROMA_SERVER_AUTHN_PROVIDER=chromadb.auth.token_authn.TokenAuthServerProvider
+      - CHROMA_SERVER_AUTHN_CREDENTIALS=my_chroma_token
+    ports:
+      - "5435:8000"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  chroma_data:
