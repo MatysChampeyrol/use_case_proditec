@@ -8,3 +8,5 @@ PyPDF2
 langchain_core
 python-dotenv
 psycopg2-binary
+tqdm
+markitdown
