@@ -10,3 +10,6 @@ python-dotenv
 psycopg2-binary
 tqdm
 markitdown
+torch
+transformers >= 4.40.0
+
