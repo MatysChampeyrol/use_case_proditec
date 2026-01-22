@@ -111,4 +111,6 @@ with gr.Blocks(title="Expert RAG Assistant") as demo:
     msg_input.submit(respond, [msg_input, chatbot, top_k_slider], [msg_input, chatbot])
 
 if __name__ == "__main__":
-    demo.launch(theme=custom_theme, debug=True)
+    demo.launch(theme=custom_theme, debug=True, server_name="0.0.0.0", 
+    server_port=7860, 
+    share=True)
