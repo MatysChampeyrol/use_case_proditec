@@ -8,12 +8,12 @@ from transformers import AutoModel, AutoTokenizer
 from typing import List, Union
 
 
-class LlamaEmbedder:
+class EmbeddingService:
     """Classe simple pour générer des embeddings avec llama-embed-nemotron-8b."""
     
     def __init__(
         self, 
-        model_name: str = "Linq-AI-Research/Linq-Embed-Mistral",
+        model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         device: str = None
     ):
         """
@@ -185,7 +185,7 @@ class LlamaEmbedder:
 if __name__ == "__main__":
     
     # Initialise le modèle
-    embedder = LlamaEmbedder()
+    embedder = EmbeddingService()
     
     print("\n" + "="*80)
     print("EXEMPLE 1: Embedding d'un seul texte")

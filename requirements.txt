@@ -12,4 +12,5 @@ tqdm
 markitdown
 torch
 transformers >= 4.40.0
-
+ollama
+langchain_ollama

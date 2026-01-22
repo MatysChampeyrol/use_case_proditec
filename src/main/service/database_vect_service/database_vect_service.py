@@ -18,7 +18,7 @@ def get_chroma_client():
         port=int(port),
         settings=Settings(
             chroma_client_auth_provider="chromadb.auth.token_authn.TokenAuthClientProvider",
-            chroma_client_auth_credentials=token
+            chroma_client_auth_credentials="token"
         )
     )
 
