@@ -35,6 +35,8 @@ class MarkdownParser:
         
         # 1. Suppression des caractères de contrôle bizarres (sauf newlines/tabs)
         content = "".join(ch for ch in content if ch.isprintable() or ch in '\n\t')
+    
+        content = self.detect_and_remove_toc(content)
 
         # 2. Nettoyage ligne par ligne (bruit spécifique et pieds de page)
         lines = content.split('\n')
@@ -321,6 +323,35 @@ class MarkdownParser:
         print("=" * 60)
         
         return parsed_docs
+    
+
+    def detect_and_remove_toc(self, content: str) -> str:
+        """Retire les sections de table des matières"""
+        lines = content.split('\n')
+        cleaned_lines = []
+        skip_until = -1
+        
+        for i, line in enumerate(lines):
+            if i < skip_until:
+                continue
+                
+            # Détecter début de TOC
+            if re.search(r'(table des matières|sommaire|table of contents)', line.lower()):
+                # Chercher la fin (section suivante ou 20 lignes)
+                for j in range(i, min(i + 50, len(lines))):
+                    if re.match(r'^#{1,3}\s', lines[j]) and j > i:
+                        skip_until = j
+                        break
+                else:
+                    skip_until = i + 20
+                continue
+            
+            # Ignorer les lignes type TOC (avec points)
+            if re.search(r'\.{3,}.*\d+\s*$', line):
+                continue
+                
+            cleaned_lines.append(line)
+        return '\n'.join(cleaned_lines)
 
 
 def main():
