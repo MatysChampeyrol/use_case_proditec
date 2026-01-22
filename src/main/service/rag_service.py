@@ -208,7 +208,7 @@ class RagService:
         
         # Initialize conversion and parsing
         self.md_converter = MarkItDown()
-        self.markdown_parser = IntegratedMarkdownParser()
+        self.markdown_parser = RagService()
         
         # Default collection name
         self.collection_name = "documents"
