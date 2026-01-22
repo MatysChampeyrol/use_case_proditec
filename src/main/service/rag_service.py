@@ -18,6 +18,8 @@ from src.main.service.embedding_service.embedding_service import EmbeddingServic
 from src.main.model.config import Config
 import json
 import shutil
+from src.main.service.markdown_parser import MarkdownParser
+
 
 
 def load_file(file):
@@ -37,6 +39,8 @@ class RagService:
     def __init__(self):
         # Load configuration
         self.config = Config(load_file("src/main/config/config.json"))
+        self.md_parser = MarkdownParser()
+
         
         # Initialize services
         self.chunk_service = ChunkService(self.config)
@@ -98,9 +102,12 @@ class RagService:
             if file_extension in ['.pdf', '.docx', '.doc', '.xlsx', '.pptx']:
                 print(f"→ Conversion en Markdown ({file_extension})...")
                 markdown_content = self._convert_to_markdown(file_path)
+                parsed = self.md_parser.clean_markdown(markdown_content)
+
             elif file_extension == '.md':
                 with open(file_path, 'r', encoding='utf-8') as f:
                     markdown_content = f.read()
+                parsed = self.md_parser.clean_markdown(markdown_content)
             else:
                 # Texte brut
                 with open(file_path, 'r', encoding='utf-8') as f:
@@ -111,11 +118,11 @@ class RagService:
             # 2. Chunker le document
             print(f"→ Chunking (size={chunk_size}, overlap={chunk_overlap})...")
             chunks = self.chunk_service.chunk(
-                pages=markdown_content,
+                pages=parsed,
                 size=chunk_size,
                 overlap=chunk_overlap
             )
-            
+                        
             num_chunks = len(chunks)
             print(f"✓ {num_chunks} chunks créés")
             
