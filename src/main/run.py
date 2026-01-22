@@ -1,116 +1,100 @@
 import gradio as gr
-import os
 from pathlib import Path
 from src.main.service.rag_service import RagService 
 
-# Initialisation du service
+# --- Initialisation du service RAG ---
 rag = RagService()
 
-def process_upload(file, chunk_size, chunk_overlap):
-    if file is None:
-        return gr.update(value="⚠️ Veuillez sélectionner un fichier.", visible=True), "Aucun document"
-    
-    try:
-        result = rag.upload(
-            file_path=file.name,
-            chunk_size=int(chunk_size),
-            chunk_overlap=int(chunk_overlap)
-        )
-        stats = rag.get_collection_stats()
-        
-        msg = f"✅ **{result['filename']}** indexé !\n\n📦 {result['num_chunks']} chunks créés."
-        return gr.update(value=msg, visible=True), f"Total chunks: {stats['total_documents']}"
-    except Exception as e:
-        return gr.update(value=f"❌ Erreur : {str(e)}", visible=True), "Erreur"
+# --- Pré-chargement automatique du document ---
+preload_path = Path("ReferenceManualVision.pdf")
+collection_name = "documents"
 
-def respond(message, history, top_k):
+if preload_path.exists():
+    stats = rag.get_collection_stats(collection_name=collection_name)
+    already_indexed = any(
+        md.get("source") == preload_path.name for md in stats.get("sample_metadata", [])
+    )
+
+    if not already_indexed:
+        print(f"📄 Indexation automatique de {preload_path}...")
+        try:
+            rag.upload(
+                file_path=preload_path,
+                chunk_size=1000,
+                chunk_overlap=200,
+                collection_name=collection_name
+            )
+            print(f"✅ Document {preload_path.name} indexé dans la collection '{collection_name}'")
+        except Exception as e:
+            print(f"❌ Erreur lors de l'indexation automatique: {e}")
+    else:
+        print(f"ℹ️ {preload_path.name} est déjà indexé, pas besoin de re-upload.")
+else:
+    print(f"⚠️ Fichier {preload_path} introuvable, indexation automatique ignorée.")
+
+
+# --- Fonction de réponse simplifiée ---
+def respond(message, history):
     if not message:
         return "", history
-    
     try:
-        # Appel du service RAG
-        response = rag.ask(question=message, top_k=int(top_k))
-        
+        response = rag.ask(question=message, top_k=10)
         answer = response['answer']
         sources = response['context']
-        
-        # --- Formatage enrichi des sources avec extraits ---
-        source_text = "\n\n---\n### 🔍 Sources et extraits consultés\n"
-        
+
+        # Sources repliables
+        source_text = "\n\n---\n### 🔍 Sources consultées\n"
         for i, src in enumerate(sources, 1):
             name = src['metadata'].get('source', 'Inconnu')
             score = src.get('distance', 0)
-            # On récupère le contenu du chunk
             content = src.get('document', 'Contenu non disponible')
-            
-            # On crée un bloc repliable (Accordion) en Markdown/HTML
             source_text += f"""
 <details>
   <summary><b>{i}. {name}</b> (Score: {score:.3f})</summary>
   <div style="background-color: rgba(0,0,0,0.05); padding: 10px; border-left: 4px solid #2196F3; margin-top: 5px; font-size: 0.9em;">
-    <i>"{content}"</i>
+    <i>{content}</i>
   </div>
 </details>
 """
-        
+
         full_response = f"{answer}{source_text}"
-        
-        # Structure imposée par Gradio 5/6 (Dictionnaires)
+
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": full_response})
-        
         return "", history
+
     except Exception as e:
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": f"❌ Erreur : {str(e)}"})
         return "", history
 
-# --- Interface Gradio ---
 
+# --- Interface Gradio professionnelle ---
 custom_theme = gr.themes.Soft(primary_hue="blue", secondary_hue="slate")
 
 with gr.Blocks(title="Expert RAG Assistant") as demo:
-    
     gr.Markdown("# 🤖 Assistant Documentaire Intelligent")
-    
-    with gr.Row():
-        # Panneau de gauche
-        with gr.Column(scale=1):
-            with gr.Group():
-                gr.Markdown("### 📄 Configuration")
-                file_input = gr.File(label="Charger un document")
-                
-                with gr.Accordion("Réglages avancés", open=False):
-                    chunk_size = gr.Slider(500, 2000, value=1000, step=100, label="Taille")
-                    chunk_overlap = gr.Slider(0, 500, value=200, step=50, label="Overlap")
-                
-                upload_btn = gr.Button("🚀 Indexer", variant="primary")
-                status_box = gr.Markdown(visible=False)
-                db_stats = gr.Label(value="En attente...", label="Statut Base")
+    gr.Markdown("Posez vos questions au document préchargé.")
 
-        # Panneau de droite
-        with gr.Column(scale=3):
-            chatbot = gr.Chatbot(show_label=False, height=600)
-            
-            with gr.Row():
-                msg_input = gr.Textbox(placeholder="Posez votre question...", show_label=False, scale=9)
-                submit_btn = gr.Button("Envoyer", variant="primary", scale=1)
-            
-            with gr.Row():
-                top_k_slider = gr.Slider(1, 10, value=5, step=1, label="Nombre de sources (Top-K)")
-                clear = gr.ClearButton([msg_input, chatbot], value="Effacer le chat")
-
-    # --- Événements ---
-    upload_btn.click(
-        fn=process_upload,
-        inputs=[file_input, chunk_size, chunk_overlap],
-        outputs=[status_box, db_stats]
+    # Chatbot avec message d'accueil
+    chatbot = gr.Chatbot(
+        value=[{"role": "assistant", "content": "Bonjour, je suis un chatbot dédié au support technique, posez votre question."}],
+        show_label=False,
+        height=400
     )
-    
-    submit_btn.click(respond, [msg_input, chatbot, top_k_slider], [msg_input, chatbot])
-    msg_input.submit(respond, [msg_input, chatbot, top_k_slider], [msg_input, chatbot])
+
+    msg_input = gr.Textbox(placeholder="Tapez votre question ici...", show_label=False)
+    submit_btn = gr.Button("Envoyer", variant="primary")
+
+    submit_btn.click(respond, [msg_input, chatbot], [msg_input, chatbot])
+    msg_input.submit(respond, [msg_input, chatbot], [msg_input, chatbot])
+
 
 if __name__ == "__main__":
-    demo.launch(theme=custom_theme, debug=True, server_name="0.0.0.0", 
-    server_port=7860, 
-    share=True)
+    demo.launch(
+        theme=custom_theme,
+        debug=True,
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=True
+    )

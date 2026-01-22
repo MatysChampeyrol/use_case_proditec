@@ -32,7 +32,7 @@ class LlmService:
 
     def initialize_llm_model(self):    
         return OllamaLLM(
-            model="mistral",
+            model="phi3:mini",
             temperature=0.7,
         ) 
 
@@ -44,7 +44,7 @@ class LlmService:
         if similarity_query:
             context = "\n".join([f"Context {i+1}: {item['page_content']}" for i, item in enumerate(similarity_query)])
         
-        prompt = f"""You are an AI assistant. Use the following context to answer the question.
+        prompt = f"""Tu es expert technique d'un service support client. Réponds à la question en te basant uniquement sur le CONTEXTE TECHNIQUE fourni. Réponds en français. Si l'information manque, admets-le.
         
         {context}
         

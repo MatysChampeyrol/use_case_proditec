@@ -2,13 +2,13 @@ import chromadb
 from chromadb.config import Settings
 
 def get_chroma_client_local():
-    # Nouveau client local, persistant
+    # Client ChromaDB en mémoire (non persistant)
     client = chromadb.Client(
         settings=Settings(
-            persist_directory="./chroma_db"  # dossier pour sauvegarder la base
+            is_persistent=True  # optionnel, mais explicite
         )
     )
-    print("Connexion à ChromaDB local réussie !")
+    print("Connexion à ChromaDB en mémoire réussie !")
     return client
 
 # Utilisation
