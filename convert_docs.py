@@ -25,7 +25,7 @@ except Exception:
     tqdm = None  # tqdm is optional
 
 # Configuration
-SOURCE_DIR = Path("prodicet")  # Source directory
+SOURCE_DIR = Path("proditec/")  # Source directory
 OUTPUT_DIR = Path("converted_docs")  # Output directory
 TEMP_DIR = Path("temp_docx")  # Temporary folder for converted .docx files
 FAILED_FILES_PATH = OUTPUT_DIR / "_failed_files.txt"
