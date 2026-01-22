@@ -67,7 +67,7 @@ class MarkdownParser:
         content = '\n'.join(cleaned_lines)
 
         # 3. Fusionner les lignes brisées (Reconstruction de phrases)
-        # C'est CRITIQUE pour le RAG : transforme "Bonjour je suis\namoon" en "Bonjour je suis amoon"
+
         content = self._merge_broken_lines(content)
 
         # 4. Normalisation des espaces et headers
