@@ -18,7 +18,7 @@ from src.main.service.embedding_service.embedding_service import EmbeddingServic
 from src.main.model.config import Config
 import json
 import shutil
-from src.main.service.markdown_parser import MarkdownParser
+from markdown_parser import MarkdownParser
 
 
 
