@@ -344,54 +344,51 @@ if __name__ == "__main__":
     # Initialiser le service
     rag = RagService()
     
-    # Exemple 1: Upload d'un document
+    # Exemple 1: Upload d'un PDF
     print("\n" + "="*80)
-    print("EXEMPLE 1: Upload d'un document")
+    print("EXEMPLE 1: Upload d'un PDF")
     print("="*80)
     
-    # Créer un fichier test
-    test_content = """
-    # Introduction au Machine Learning
+    # Chemin vers le PDF
+    pdf_path = "ReferenceManualVision.pdf"
     
-    Le machine learning est une branche de l'intelligence artificielle.
+    # Vérifier si le fichier existe
+    if not Path(pdf_path).exists():
+        print(f"❌ Erreur: Le fichier '{pdf_path}' n'existe pas!")
+        print(f"📁 Répertoire actuel: {os.getcwd()}")
+        print("\n💡 Assurez-vous que 'a.pdf' est dans le même répertoire que ce script.")
+        exit(1)
     
-    ## Types d'apprentissage
-    
-    Il existe trois types principaux:
-    - Apprentissage supervisé
-    - Apprentissage non supervisé
-    - Apprentissage par renforcement
-    
-    ## Applications
-    
-    Le ML est utilisé dans de nombreux domaines comme la reconnaissance d'images,
-    le traitement du langage naturel, et les systèmes de recommandation.
-    """
-    
-    # Créer un fichier temporaire pour le test
-    temp_file = Path("test_document.md")
-    with open(temp_file, "w", encoding="utf-8") as f:
-        f.write(test_content)
-    
-    # Upload avec le chemin du fichier
+    # Upload avec le chemin du PDF
     upload_result = rag.upload(
-        file_path="test_document.md",  # Juste le chemin!
-        chunk_size=200,
-        chunk_overlap=50
+        file_path=pdf_path,
+        chunk_size=1000,      # Chunks plus grands pour un PDF
+        chunk_overlap=200
     )
     
-    # Exemple 2: Poser une question
+    # Exemple 2: Poser une question sur le PDF
     print("\n" + "="*80)
-    print("EXEMPLE 2: Poser une question")
+    print("EXEMPLE 2: Poser une question sur le PDF")
     print("="*80)
     
     response = rag.ask(
-        question="Quels sont les types d'apprentissage en machine learning?",
-        top_k=3
+        question="Code erreur 110",
+        top_k=5,
     )
     
-    print("\nRéponse structurée:")
-    print(json.dumps(response, indent=2, ensure_ascii=False))
+    print("\n📊 Résumé de la réponse:")
+    print(f"  • Question: {response['question']}")
+    print(f"  • Nombre de sources: {response['num_sources']}")
+    print(f"  • Collection: {response['collection']}")
+    
+    if response['answer']:
+        print(f"\n💬 Réponse du LLM:")
+        print(response['answer'])
+    else:
+        print(f"\n📄 Contexte trouvé (top 3):")
+        for i, ctx in enumerate(response['context'][:3], 1):
+            print(f"\n[{i}] Distance: {ctx['distance']:.4f}")
+            print(f"    {ctx['document'][:200]}...")
     
     # Exemple 3: Statistiques de collection
     print("\n" + "="*80)
@@ -399,7 +396,9 @@ if __name__ == "__main__":
     print("="*80)
     
     stats = rag.get_collection_stats()
-    print(json.dumps(stats, indent=2, ensure_ascii=False))
+    print(f"\n📊 Collection: {stats['collection_name']}")
+    print(f"📚 Total de chunks: {stats['total_documents']}")
     
-    # Nettoyer
-    temp_file.unlink()
+    if stats['sample_metadata']:
+        print(f"\n📋 Exemple de métadonnées:")
+        print(json.dumps(stats['sample_metadata'][0], indent=2, ensure_ascii=False))

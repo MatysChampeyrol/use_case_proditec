@@ -7,13 +7,14 @@ import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 from typing import List, Union
 
+#"intfloat/e5-mistral-7b-instruct"
 
 class EmbeddingService:
     """Classe simple pour générer des embeddings avec llama-embed-nemotron-8b."""
     
     def __init__(
         self, 
-        model_name: str = "Linq-AI-Research/Linq-Embed-Mistral",
+        model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         device: str = None
     ):
         """

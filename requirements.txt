@@ -9,7 +9,7 @@ langchain_core
 python-dotenv
 psycopg2-binary
 tqdm
-markitdown
+markitdown[all]
 torch
 transformers >= 4.40.0
 ollama
