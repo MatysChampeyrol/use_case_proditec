@@ -3,7 +3,6 @@ langchain-text-splitters
 requests
 langchain_community
 pypdf
-flask
 PyPDF2
 langchain_core
 python-dotenv

@@ -7,9 +7,9 @@ Conçu dans le cadre du workshop **AI4Industry** pour le cas d'usage **Proditec*
 ## 🚀 Fonctionnalités Clés
 
 - **Interface Conversationnelle (Gradio)** : Chatbot intuitif pour poser des questions.
-- **Support Multi-Formats** : Ingestion de fichiers PDF, DOCX, XLSX, PPIX, etc.
+- **Support Multi-Formats** : Ingestion de fichiers PDF, DOCX, XLSX, PPIX, etc. Côté backend
 - **RAG Local & Sécurisé** :
-  - **Ollama** : Utilisation de LLM Open-Source (Llama 3, Mistral, etc.) en local.
+  - **Ollama** : Utilisation de LLM Open-Source Mistral en local.
   - **ChromaDB** : Base de données vectorielle persistante via Docker.
 - **Transparence** : Citations précises des sources et affichage des extraits utilisés pour générer chaque réponse.
 - **Outils de Traitement de Données** : Scripts avancés pour la conversion en masse et le nettoyage de documents (OCR, fusion de lignes brisées, suppression du bruit).
@@ -27,6 +27,9 @@ Le projet repose sur la stack technique suivante :
 - **Conversion** : `MarkItDown` (Microsoft) pour la conversion universelle de documents vers Markdown.
 
 ---
+## Modèles d'IA utilisés
+Modèle LLM : mistral-7b
+Modèle Embedding : intfloat/e5-mistral-7b-instruct
 
 ## 🛠️ Prérequis
 
@@ -35,7 +38,11 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 1.  **Python 3.12**
 2.  **Ollama** (installé et fonctionnel sur votre machine)
 
-> **Note** : Assurez-vous d'avoir téléchargé un modèle dans Ollama au préalable (ex: `ollama pull mistral` ou `ollama pull llama3`).
+> **Note** : Assurez-vous d'avoir téléchargé le modèle dans Ollama au préalable : 
+
+```bash
+ollama pull mistral
+```
 
 ---
 
@@ -45,6 +52,7 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 
 ```bash
 git clone https://github.com/MatysChampeyrol/use_case_proditec
+
 cd use_case_proditec
 ```
 
