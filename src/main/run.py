@@ -5,8 +5,8 @@ from src.main.service.rag_service import RagService
 # --- Initialisation du service RAG ---
 rag = RagService()
 
-# --- Pré-chargement automatique du document ---
-preload_path = Path("ReferenceManualVision.pdf")
+# --- Pré-chargement automatique du document du niveau 1---
+preload_path = Path("uploads/ReferenceManualVision.pdf")
 collection_name = "documents"
 
 if preload_path.exists():

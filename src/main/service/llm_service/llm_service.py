@@ -32,7 +32,7 @@ class LlmService:
 
     def initialize_llm_model(self):    
         return OllamaLLM(
-            model="phi3:mini",
+            model="mistral",
             temperature=0.7,
         ) 
 
