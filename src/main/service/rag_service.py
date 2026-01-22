@@ -31,7 +31,7 @@ def load_file(file):
         return json.load(read_file)
 
 
-class IntegratedMarkdownParser:
+class RagService:
     """Parser Markdown intégré avec détection et suppression du sommaire"""
     
     def __init__(self):
